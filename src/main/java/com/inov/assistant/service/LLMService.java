@@ -1,24 +1,23 @@
 package com.inov.assistant.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.inov.assistant.memory.SessionMemoryManager;
 import com.inov.assistant.model.Message;
 import com.inov.assistant.tool.AgendaTool;
 import com.inov.assistant.tool.DocumentSynthesisTool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LLMService {
-    private static final Logger logger = LoggerFactory.getLogger(LLMService.class);
     private static final int MAX_CONVERSATION_TURNS = 5;
     
     private final GroqService groqService;
@@ -28,10 +27,7 @@ public class LLMService {
     private final AgendaTool agendaTool;
     
     private final DocumentSynthesisTool synthesisTool;
-    
-    @Value("${llm.temperature:0.7}")
-    private double temperature;
-    
+
     public String processMessage(String sessionId, String userMessage) {
         // Récupérer l'historique de conversation
         List<Message> history = memoryManager.getConversationHistory(sessionId, MAX_CONVERSATION_TURNS);
@@ -144,28 +140,10 @@ public class LLMService {
     
     public String generateResponse(String prompt) {
         try {
-            String response = groqService.chat(prompt, temperature);
-            return extractContent(response);
+            return groqService.generate(prompt);
         } catch (Exception e) {
-            logger.error("Error calling Groq API", e);
+            log.error("Error calling Groq API", e);
             return "Désolé, je rencontre une difficulté technique. Veuillez réessayer.";
-        }
-    }
-
-    private String extractContent(String jsonResponse) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(jsonResponse);
-
-            return root
-                .path("choices")
-                .get(0)
-                .path("message")
-                .path("content")
-                .asText();
-        } catch (Exception e) {
-            logger.error("Error parsing response", e);
-            return "Erreur lors du traitement de la réponse.";
         }
     }
 

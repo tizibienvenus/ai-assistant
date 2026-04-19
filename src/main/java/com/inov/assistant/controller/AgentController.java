@@ -3,34 +3,33 @@ package com.inov.assistant.controller;
 import com.inov.assistant.dto.ChatRequest;
 import com.inov.assistant.dto.ChatResponse;
 import com.inov.assistant.memory.SessionMemoryManager;
+import com.inov.assistant.model.Session;
 import com.inov.assistant.service.LLMService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/agent")
 @Tag(name = "Agent IA", description = "Endpoints pour l'assistant intelligent")
 public class AgentController {
     
-    @Autowired
-    private LLMService llmService;
+    private final LLMService llmService;
     
-    @Autowired
-    private SessionMemoryManager memoryManager;
+    private final SessionMemoryManager memoryManager;
     
     @PostMapping("/chat")
     @Operation(summary = "Point d'entrée principal de l'agent")
     public ResponseEntity<ChatResponse> chat(@Valid @RequestBody ChatRequest request) {
         String sessionId = request.getSessionId();
-        if (sessionId == null || sessionId.isEmpty()) {
-            sessionId = memoryManager.createSession();
-        }
+        Session session = memoryManager.getOrCreateSession(sessionId);
+
         
         String response = llmService.processMessage(sessionId, request.getMessage());
         
