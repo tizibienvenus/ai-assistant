@@ -2,7 +2,8 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <title>AI Assistant API Docs</title>
+  <title>API Docs AI ASSISTANT - INOV CONSULTING</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Swagger CSS -->
 
@@ -23,9 +24,6 @@
     #swagger-ui {
       height: 100vh;
     }
-
-  
-
   </style>
 </head>
 
@@ -44,10 +42,9 @@
   -->
 
   <script>
-    window.onload = async () => {
-
+    window.onload = () => {
       window.ui = SwaggerUIBundle({
-        url: "/api/v3/api-docs", // 🔥 endpoint Springdoc
+        url: "/api/v3/api-docs",
         dom_id: "#swagger-ui",
 
         deepLinking: true,
@@ -60,8 +57,6 @@
 
         layout: "StandaloneLayout",
         faviconUrl: "/webjars/swagger-ui/favicon-32x32.png",
-  
-
       });
     };
   </script>
