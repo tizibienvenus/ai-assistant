@@ -1,14 +1,16 @@
-# Image finale minimale avec JDK 21 Alpine
-FROM eclipse-temurin:21-jdk-alpine
 
-# Dossier de travail
+# Dockerfile
+FROM openjdk:21-slim AS build
 WORKDIR /app
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
+RUN ./mvnw dependency:go-offline -B
+COPY src src
+RUN ./mvnw package -DskipTests
 
-# Copier le JAR généré par Maven
-COPY target/document*.jar app.jar
-
-# Exposer le port (optionnel mais propre)
-EXPOSE 8083
-
-# Lancer l'application
+FROM openjdk:21-slim
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]

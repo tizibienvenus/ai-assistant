@@ -5,7 +5,8 @@ import com.inov.assistant.model.Event;
 import com.inov.assistant.service.AgendaService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +15,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/agenda")
 public class AgendaController {
     
-    @Autowired
-    private AgendaService agendaService;
+    private final AgendaService agendaService;
     
     @GetMapping
     @Operation(summary = "Liste les événements")

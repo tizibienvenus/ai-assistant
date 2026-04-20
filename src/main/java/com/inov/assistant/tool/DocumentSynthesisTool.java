@@ -1,6 +1,6 @@
 package com.inov.assistant.tool;
 
-import com.inov.assistant.service.LLMService;
+import com.inov.assistant.service.LLMClient;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DocumentSynthesisTool {
 
-    private final LLMService llmService;
+    private final LLMClient llmClient;
     
     public Map<String, Object> execute(String content) {
         Map<String, Object> result = new HashMap<>();
@@ -46,7 +46,7 @@ public class DocumentSynthesisTool {
         Format de réponse : texte clair et structuré avec des titres.
         """.formatted(content);
         
-        return llmService.generateResponse(prompt);
+        return llmClient.generate(prompt);
     }
     
     public String getToolDefinition() {
