@@ -1,17 +1,25 @@
 package com.inov.assistant.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.inov.assistant.dto.ChatRequest;
 import com.inov.assistant.dto.ChatResponse;
 import com.inov.assistant.memory.SessionMemoryManager;
 import com.inov.assistant.model.Session;
 import com.inov.assistant.service.LLMService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -30,11 +38,13 @@ public class AgentController {
         String sessionId = request.getSessionId();
         Session session = memoryManager.getOrCreateSession(sessionId);
 
-        
         String response = llmService.processMessage(sessionId, request.getMessage());
-        
-        int turn = memoryManager.getSession(sessionId).getMessages().size() / 2;
-        
+
+        Session updatedSession = memoryManager.getSession(sessionId);
+
+        int turn = (updatedSession != null && updatedSession.getMessages() != null)
+            ? updatedSession.getMessages().size() / 2
+            : 0;
         ChatResponse chatResponse = new ChatResponse();
         chatResponse.setSessionId(sessionId);
         chatResponse.setResponse(response);

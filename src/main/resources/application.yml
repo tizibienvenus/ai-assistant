@@ -8,8 +8,8 @@ spring:
     name: ai-assistant
   data:
     mongodb:
-      uri: ${MONGO_URI:mongodb://localhost:27017/inov_assistant}
-      auto-index-creation: true  # managed programmatically via MongoIndexConfig
+      uri: ${MONGO_URI}
+      auto-index-creation: true 
   jackson:
     serialization:
       write-dates-as-timestamps: false
@@ -17,7 +17,8 @@ spring:
 
 groq:
   api:
-    key: ${GROQ_API_KEY:key}
+    key: ${GROQ_API_KEY}
+    url: ${GROQ_API_URL:https://api.groq.com/openai/v1}
   model: ${GROQ_MODEL:llama-3.3-70b-versatile}
 
 llm:
@@ -27,6 +28,7 @@ llm:
 logging:
   level:
     com.inov.assistant: ${LOG_LEVEL:INFO}
+    org.springframework.web.client: DEBUG 
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
 
