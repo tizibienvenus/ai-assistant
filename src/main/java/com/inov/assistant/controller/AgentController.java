@@ -46,7 +46,7 @@ public class AgentController {
             ? updatedSession.getMessages().size() / 2
             : 0;
         ChatResponse chatResponse = new ChatResponse();
-        chatResponse.setSessionId(sessionId);
+        chatResponse.setSessionId(session.getId());
         chatResponse.setResponse((String) result.get("response"));
         chatResponse.setToolUsed((String) result.get("toolUsed"));
         chatResponse.setTurn(turn);
