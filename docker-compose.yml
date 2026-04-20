@@ -27,8 +27,10 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
-    environment:
-      - MONGO_URI=mongodb://admin:admin123@mongodb:27017/inov_assistant?authSource=admin
+    volumes:
+      - ./.env:/app/.env:ro
+    #environment:
+    #  - MONGO_URI=mongodb://admin:admin123@mongodb:27017/inov_assistant?authSource=admin
     networks:
       - ai-assistant-net
 networks:
