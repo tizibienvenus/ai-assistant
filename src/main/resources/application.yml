@@ -41,6 +41,8 @@ management:
     health:
       show-details: always
 
+docs:
+  enabled: true
 springdoc:
   api-docs:
     path: /api/v3/api-docs
