@@ -1,18 +1,20 @@
 package com.inov.assistant.service;
 
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
 import com.inov.assistant.memory.SessionMemoryManager;
+import com.inov.assistant.model.Event;
 import com.inov.assistant.model.Message;
 import com.inov.assistant.tool.AgendaTool;
 import com.inov.assistant.tool.DocumentSynthesisTool;
 
-import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.stereotype.Service;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -28,7 +30,7 @@ public class LLMService {
     
     private final DocumentSynthesisTool synthesisTool;
 
-    public String processMessage(String sessionId, String userMessage) {
+    public Map<String, Object> processMessage(String sessionId, String userMessage) {
         // Récupérer l'historique de conversation
         List<Message> history = memoryManager.getConversationHistory(sessionId, MAX_CONVERSATION_TURNS);
         
@@ -52,7 +54,11 @@ public class LLMService {
         memoryManager.addMessage(sessionId, "user", userMessage, null);
         memoryManager.addMessage(sessionId, "assistant", response, toolUsed);
         
-        return response;
+        Map<String, Object> result = new HashMap<>();
+        result.put("response", response);
+        result.put("toolUsed", toolUsed);
+
+        return result;
     }
     
     private String determineTool(String userMessage) {
@@ -109,18 +115,30 @@ public class LLMService {
         if (!"success".equals(result.get("status"))) {
             return "Je n'ai pas pu accéder à votre agenda. Veuillez réessayer.";
         }
-        
-        List<?> events = (List<?>) result.get("events");
+
+        @SuppressWarnings("unchecked")
+        List<Event> events = (List<Event>) result.get("events");
+
         if (events == null || events.isEmpty()) {
-            return "Aucun événement trouvé pour cette période.";
+            return "Vous n'avez aucun rendez-vous.";
         }
-        
-        StringBuilder response = new StringBuilder("Voici les événements trouvés :\n\n");
-        for (Object event : events) {
-            // Formater chaque événement
-            response.append("- ").append(event.toString()).append("\n");
+
+        StringBuilder response = new StringBuilder();
+
+        response.append("Voici vos rendez-vous :\n\n");
+
+        for (Event e : events) {
+            response.append("- ")
+                    .append(e.getTitle())
+                    .append(" le ")
+                    .append(e.getDateTime().toLocalDate())
+                    .append(" à ")
+                    .append(e.getDateTime().toLocalTime())
+                    .append(" avec ")
+                    .append(String.join(", ", e.getParticipants()))
+                    .append("\n");
         }
-        
+
         return response.toString();
     }
     

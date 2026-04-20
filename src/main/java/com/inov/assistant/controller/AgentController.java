@@ -38,7 +38,7 @@ public class AgentController {
         String sessionId = request.getSessionId();
         Session session = memoryManager.getOrCreateSession(sessionId);
 
-        String response = llmService.processMessage(sessionId, request.getMessage());
+        Map<String, Object> result = llmService.processMessage(sessionId, request.getMessage());
 
         Session updatedSession = memoryManager.getSession(sessionId);
 
@@ -47,7 +47,8 @@ public class AgentController {
             : 0;
         ChatResponse chatResponse = new ChatResponse();
         chatResponse.setSessionId(sessionId);
-        chatResponse.setResponse(response);
+        chatResponse.setResponse((String) result.get("response"));
+        chatResponse.setToolUsed((String) result.get("toolUsed"));
         chatResponse.setTurn(turn);
         
         return ResponseEntity.ok(chatResponse);
