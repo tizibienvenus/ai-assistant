@@ -104,6 +104,41 @@ export LLM_MAX_TOKENS=1000
 mvn spring-boot:run
 ```
 
+### Load environment variables from `.env`
+
+If you store configuration in a `.env` file, you can export its values into your shell with:
+
+```bash
+export $(grep -v '^#' .env | xargs)
+```
+
+### Docker
+
+Build the Docker image locally:
+
+```bash
+docker build -t inov-consulting-ai-assistant .
+```
+
+Run the container:
+
+```bash
+docker run --rm -p 8080:8080 \
+  -e MONGO_URI="mongodb://localhost:27017/ai-assistant" \
+  -e GROQ_API_KEY="your-groq-api-key" \
+  -e LLM_TEMPERATURE=0.7 \
+  -e LLM_MAX_TOKENS=1000 \
+  inov-consulting-ai-assistant
+```
+
+Alternatively, start the app with Docker Compose:
+
+```bash
+docker compose up --build
+```
+
+This launches both MongoDB and the AI Assistant service together.
+
 ## Notes
 
 - The application uses `springdoc-openapi` to expose API metadata.
